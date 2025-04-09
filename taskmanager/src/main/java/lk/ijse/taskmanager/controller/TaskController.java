@@ -30,7 +30,6 @@ public class TaskController {
         logger.info("Received request to save task: {}", taskDTO);
 
         try {
-            System.out.println(taskDTO);
             boolean success = taskService.saveTask(taskDTO);
 
             if (success) {
@@ -75,15 +74,34 @@ public class TaskController {
         try {
             logger.info("Received request to get tasks");
             return taskService.getAllTasks();
-        }catch (DataPersistException e) {
+        } catch (DataPersistException e) {
             logger.warn("DataPersistException while getting tasks");
             return null;
-        }catch (Exception e) {
+        } catch (Exception e) {
             logger.error("Unexpected error occurred while getting tasks");
             return null;
         }
     }
 
-    @PutMapping(value = "/{taskId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> updateTask(@RequestBody TaskDTO taskDTO) {}
+    @PatchMapping(value = "/{taskId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> updateTask(@RequestBody TaskDTO taskDTO, @PathVariable long taskId) {
+        logger.info("Received request to update task: {}", taskDTO);
+        try {
+            boolean result = taskService.updateTask(taskDTO, taskId);
+            if (result) {
+                logger.info("Task updated successfully with details: {}", taskDTO);
+                return ResponseEntity.status(HttpStatus.OK).body("Task updated successfully");
+            } else {
+                logger.error("Failed to update task: {}", taskDTO);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update task");
+            }
+
+        } catch (DataPersistException e) {
+            logger.warn("DataPersistException while updating task: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid task data: " + e.getMessage());
+        } catch (Exception e) {
+            logger.error("Unexpected error occurred while updating task: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error occurred");
+        }
+    }
 }
