@@ -1,6 +1,8 @@
 package lk.ijse.taskmanager.service.impl;
 
 import lk.ijse.taskmanager.dto.TaskDTO;
+import lk.ijse.taskmanager.entity.TaskEntity;
+import lk.ijse.taskmanager.exception.NotFoundException;
 import lk.ijse.taskmanager.repository.TaskRepository;
 import lk.ijse.taskmanager.service.TaskService;
 import lk.ijse.taskmanager.util.Mapping;
@@ -21,7 +23,7 @@ public class TaskServiceImpl implements TaskService {
 
     public TaskServiceImpl(TaskRepository taskRepository, Mapping mapping, IdGenerator idGenerator) {
         this.taskRepository = taskRepository;
-        this.mapping =mapping;
+        this.mapping = mapping;
         this.idGenerator = idGenerator;
     }
 
@@ -29,7 +31,6 @@ public class TaskServiceImpl implements TaskService {
     public boolean saveTask(TaskDTO taskDTO) {
         try {
             taskDTO.setId(idGenerator.generateTaskId());
-            System.out.println(taskDTO.getId());
             logger.info("Saving task: {}", taskDTO.getTitle());
             taskRepository.save(mapping.toTaskEntity(taskDTO));
             logger.info("Task saved successfully.");
@@ -39,6 +40,18 @@ public class TaskServiceImpl implements TaskService {
             return false;
         }
 
+    }
+
+    @Override
+    public TaskDTO getTaskById(long id) {
+        try {
+            logger.info("Retrieving task by id: {}", id);
+            TaskEntity taskEntity = taskRepository.findById(id).orElseThrow(() -> new NotFoundException("Task not found: " + id));
+            return mapping.toTaskDTO(taskEntity);
+        }catch (Exception e) {
+            logger.error("Failed to get task by id", e);
+            return null;
+        }
     }
 
 }
