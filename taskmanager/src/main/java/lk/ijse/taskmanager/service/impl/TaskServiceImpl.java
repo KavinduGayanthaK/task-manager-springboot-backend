@@ -1,0 +1,44 @@
+package lk.ijse.taskmanager.service.impl;
+
+import lk.ijse.taskmanager.dto.TaskDTO;
+import lk.ijse.taskmanager.repository.TaskRepository;
+import lk.ijse.taskmanager.service.TaskService;
+import lk.ijse.taskmanager.util.Mapping;
+import lk.ijse.taskmanager.util.idGenerator.IdGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@Transactional
+public class TaskServiceImpl implements TaskService {
+
+    private final TaskRepository taskRepository;
+    private final Mapping mapping;
+    private final IdGenerator idGenerator;
+    private static final Logger logger = LoggerFactory.getLogger(TaskService.class);
+
+    public TaskServiceImpl(TaskRepository taskRepository, Mapping mapping, IdGenerator idGenerator) {
+        this.taskRepository = taskRepository;
+        this.mapping =mapping;
+        this.idGenerator = idGenerator;
+    }
+
+    @Override
+    public boolean saveTask(TaskDTO taskDTO) {
+        try {
+            taskDTO.setId(idGenerator.generateTaskId());
+            System.out.println(taskDTO.getId());
+            logger.info("Saving task: {}", taskDTO.getTitle());
+            taskRepository.save(mapping.toTaskEntity(taskDTO));
+            logger.info("Task saved successfully.");
+            return true;
+        } catch (Exception e) {
+            logger.error("Failed to save task", e);
+            return false;
+        }
+
+    }
+
+}
