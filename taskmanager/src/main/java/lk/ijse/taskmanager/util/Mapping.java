@@ -19,4 +19,8 @@ public class Mapping {
     public TaskEntity toTaskEntity(TaskDTO taskDTO) {
         return modelMapper.map(taskDTO, TaskEntity.class);
     }
+
+    public TaskDTO toTaskDTO(TaskEntity taskEntity) {
+        return modelMapper.map(taskEntity, TaskDTO.class);
+    }
 }
