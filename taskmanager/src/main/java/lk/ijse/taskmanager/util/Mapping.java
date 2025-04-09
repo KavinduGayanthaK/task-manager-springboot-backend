@@ -5,6 +5,9 @@ import lk.ijse.taskmanager.entity.TaskEntity;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 public class Mapping {
 
@@ -22,5 +25,9 @@ public class Mapping {
 
     public TaskDTO toTaskDTO(TaskEntity taskEntity) {
         return modelMapper.map(taskEntity, TaskDTO.class);
+    }
+
+    public List<TaskDTO> toTaskDTOList(List<TaskEntity> taskEntities) {
+        return taskEntities.stream().map(this::toTaskDTO).collect(Collectors.toList());
     }
 }
