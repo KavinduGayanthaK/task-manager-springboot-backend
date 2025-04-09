@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 public class TaskServiceImpl implements TaskService {
@@ -50,6 +52,18 @@ public class TaskServiceImpl implements TaskService {
             return mapping.toTaskDTO(taskEntity);
         }catch (Exception e) {
             logger.error("Failed to get task by id", e);
+            return null;
+        }
+    }
+
+    @Override
+    public List<TaskDTO> getAllTasks() {
+        try {
+            logger.info("Retrieving all tasks");
+            List<TaskEntity> taskEntities = taskRepository.findAll();
+            return mapping.toTaskDTOList(taskEntities);
+        }catch (Exception e) {
+            logger.error("Failed to get tasks", e);
             return null;
         }
     }
