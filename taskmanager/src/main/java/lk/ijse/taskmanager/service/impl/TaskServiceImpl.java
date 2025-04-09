@@ -86,4 +86,18 @@ public class TaskServiceImpl implements TaskService {
         }
     }
 
+    @Override
+    public boolean deleteTask(long taskId) {
+        try {
+            logger.info("Deleting task: {}", taskId);
+            TaskEntity taskEntity = taskRepository.findById(taskId).orElseThrow(() -> new NotFoundException("Task not found: " + taskId));
+            taskRepository.delete(taskEntity);
+            logger.info("Task deleted successfully.");
+            return true;
+        } catch (Exception e) {
+            logger.error("Failed to delete task", e);
+            return false;
+        }
+    }
+
 }
