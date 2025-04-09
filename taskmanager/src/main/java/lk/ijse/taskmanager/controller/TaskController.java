@@ -104,4 +104,25 @@ public class TaskController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error occurred");
         }
     }
+
+    @DeleteMapping(value = "/{taskId}")
+    public ResponseEntity<String> deleteTask(@PathVariable long taskId) {
+        logger.info("Received request to delete task: {}", taskId);
+        try {
+            boolean result = taskService.deleteTask(taskId);
+            if (result) {
+                logger.info("Task deleted successfully with details: {}", taskId);
+                return ResponseEntity.status(HttpStatus.OK).body("Task deleted successfully");
+            } else {
+                logger.error("Failed to delete task: {}", taskId);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete task");
+            }
+        } catch (DataPersistException e) {
+            logger.warn("DataPersistException while deleting task: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid task data: " + e.getMessage());
+        } catch (Exception e) {
+            logger.error("Unexpected error occurred while deleting task: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error occurred");
+        }
+    }
 }
