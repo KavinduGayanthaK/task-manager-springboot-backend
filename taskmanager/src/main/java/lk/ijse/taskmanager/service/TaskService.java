@@ -8,4 +8,5 @@ public interface TaskService {
     boolean saveTask(TaskDTO taskDTO);
     TaskDTO getTaskById(long id);
     List<TaskDTO> getAllTasks();
+    boolean updateTask(TaskDTO taskDTO, long taskId);
 }

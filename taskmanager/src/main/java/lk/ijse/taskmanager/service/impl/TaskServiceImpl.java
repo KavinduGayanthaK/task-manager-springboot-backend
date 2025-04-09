@@ -68,4 +68,22 @@ public class TaskServiceImpl implements TaskService {
         }
     }
 
+    @Override
+    public boolean updateTask(TaskDTO taskDTO, long taskId) {
+        try {
+            logger.info("Updating task: {}", taskDTO);
+            TaskEntity existTaskEntity = taskRepository.findById(taskId).orElseThrow(() -> new NotFoundException("Task not found: " + taskId));
+            existTaskEntity.setTitle(taskDTO.getTitle());
+            existTaskEntity.setDescription(taskDTO.getDescription());
+            existTaskEntity.setStatus(taskDTO.getStatus());
+            existTaskEntity.setCreatedAt(taskDTO.getCreatedAt());
+            taskRepository.save(existTaskEntity);
+            logger.info("Task updated successfully.");
+            return true;
+        }catch (Exception e) {
+            logger.error("Failed to update task", e);
+            return false;
+        }
+    }
+
 }
