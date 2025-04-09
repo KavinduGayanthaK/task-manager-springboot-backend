@@ -11,6 +11,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/v1/task")
 public class TaskController {
@@ -67,4 +69,21 @@ public class TaskController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<TaskDTO> getAllTasks() {
+        try {
+            logger.info("Received request to get tasks");
+            return taskService.getAllTasks();
+        }catch (DataPersistException e) {
+            logger.warn("DataPersistException while getting tasks");
+            return null;
+        }catch (Exception e) {
+            logger.error("Unexpected error occurred while getting tasks");
+            return null;
+        }
+    }
+
+    @PutMapping(value = "/{taskId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> updateTask(@RequestBody TaskDTO taskDTO) {}
 }
